@@ -1,4 +1,4 @@
-using Adoption.API;
+﻿using Adoption.API;
 using Adoption.API.Application.Services.DbSeeder;
 using Adoption.API.Endpoints;
 using Adoption.API.Extensions;
@@ -15,8 +15,11 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    
+
 }
+
+Console.WriteLine($"ENVIRONMENT: {app.Environment.EnvironmentName}");
+
 app.MapOpenApi();
 app.UseSwagger();
 app.UseSwaggerUI(options =>
