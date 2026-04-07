@@ -1,4 +1,4 @@
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using Adoption.API.Application.Models.User;
 using Adoption.API.Application.Services.Auth;
 using Identity.API.Models.ViewModels;
@@ -12,7 +12,7 @@ namespace Adoption.API.Endpoints;
 public class AuthController(IAuthService authService, ILogger<AuthController> logger) : ControllerBase
 {
     [AllowAnonymous]
-    [HttpPost("login")]
+    [HttpPost("login-from-main")]
     [ProducesResponseType<TokenViewModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [EndpointSummary("User login into the system")]
