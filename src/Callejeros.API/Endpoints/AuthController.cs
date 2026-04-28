@@ -12,7 +12,7 @@ namespace Adoption.API.Endpoints;
 public class AuthController(IAuthService authService, ILogger<AuthController> logger) : ControllerBase
 {
     [AllowAnonymous]
-    [HttpPost("login-from-main")]
+    [HttpPost("/login")]
     [ProducesResponseType<TokenViewModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [EndpointSummary("User login into the system")]
