@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using Adoption.API.Application.Models.User;
 using Adoption.API.Application.Queues;
 using Adoption.API.Application.Services.Email;

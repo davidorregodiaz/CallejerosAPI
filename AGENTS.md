@@ -1,5 +1,6 @@
 # AGENTS.md - CallejerosAPI
 
+
 ## Estructura del Proyecto
 
 Este proyecto es una API ASP.NET Core 9 con arquitectura DDD (Domain-Driven Design):

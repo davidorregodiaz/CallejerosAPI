@@ -5,7 +5,7 @@
 
 # dotenv files
 .env
-src/Adoption.API/appsettings.Development.json
+src/Callejeros.API/appsettings.Development.json
 
 # User-specific files
 *.rsuser

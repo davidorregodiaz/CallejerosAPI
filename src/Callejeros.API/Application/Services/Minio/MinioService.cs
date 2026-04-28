@@ -1,4 +1,4 @@
-using Adoption.API.Utils.Options;
+﻿using Adoption.API.Utils.Options;
 using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
@@ -9,6 +9,7 @@ public class MinioService : IMinioService
 {
     private readonly IOptions<MinioOptions> _options;
     private readonly IMinioClient _minioClient;
+    private readonly IMinioClient _publicMinioClient;
     private readonly ILogger<MinioService> _logger;
 
     public MinioService(IOptions<MinioOptions> options, ILogger<MinioService> logger)
@@ -16,9 +17,16 @@ public class MinioService : IMinioService
         _options = options;
         _logger = logger;
         _minioClient = new MinioClient()
-            .WithEndpoint(_options.Value.Endpoint)
+            .WithEndpoint(_options.Value.InternalEndpoint)
             .WithCredentials(_options.Value.AccessKey, _options.Value.SecretKey)
             .WithSSL(_options.Value.WithSsl)
+            .Build();
+
+        var publicUri = new Uri(_options.Value.PublicEndpoint);
+        _publicMinioClient = new MinioClient()
+            .WithEndpoint($"{publicUri.Host}:{publicUri.Port}")
+            .WithCredentials(_options.Value.AccessKey, _options.Value.SecretKey)
+            .WithSSL(publicUri.Scheme == "https")
             .Build();
     }
 
@@ -34,7 +42,7 @@ public class MinioService : IMinioService
             if (!allowedExtensions.Contains(ext))
                 throw new InvalidOperationException(
                     $"Extensión de archivo no permitida: {ext}. Extensiones permitidas: {string.Join(", ", allowedExtensions)}");
-            
+
             var connectionValid = await ValidateConnection(ct);
             if (!connectionValid)
             {
@@ -45,7 +53,7 @@ public class MinioService : IMinioService
 
             var fileId = Guid.NewGuid().ToString();
             var objectPath = $"images/{fileId}{ext}";
-            
+
             if (!string.IsNullOrEmpty(previousUrl))
             {
                 try
@@ -141,30 +149,34 @@ public class MinioService : IMinioService
 
     public async Task<string> PresignedGetUrl(string objPath, CancellationToken ct)
     {
+        if (string.IsNullOrWhiteSpace(objPath))
+            return string.Empty;
+
         var args = new PresignedGetObjectArgs()
             .WithBucket(_options.Value.BucketName)
             .WithObject(objPath)
-            .WithExpiry(60 * 60 * 24 * 7);
-        return await _minioClient.PresignedGetObjectAsync(args);
+            .WithExpiry(60 * 60 * 24);
+
+        return await _publicMinioClient.PresignedGetObjectAsync(args);
     }
 
     public async Task DeleteBlob(string url, CancellationToken ct)
     {
-        Console.WriteLine("Eliminando el file "+url);
+        Console.WriteLine("Eliminando el file " + url);
         var args = new RemoveObjectArgs()
             .WithBucket(_options.Value.BucketName)
             .WithObject(url);
 
         await _minioClient.RemoveObjectAsync(args, ct);
     }
-    
+
     public async Task<bool> ValidateConnection(CancellationToken ct = default)
     {
         try
         {
             var buckets = await _minioClient.ListBucketsAsync(ct);
             var targetBucketExists = buckets.Buckets.Any(b => b.Name == _options.Value.BucketName);
-            
+
             if (targetBucketExists)
             {
                 _logger.LogInformation("Bucket configurado '{BucketName}' encontrado", _options.Value.BucketName);
