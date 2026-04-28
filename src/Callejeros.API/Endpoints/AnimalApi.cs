@@ -1,4 +1,4 @@
-using Adoption.API.Abstractions;
+﻿using Adoption.API.Abstractions;
 using Adoption.API.Application.Commands.Animals;
 using Adoption.API.Application.Models;
 using Adoption.API.Application.Queries;
@@ -48,15 +48,16 @@ public static class AnimalApi
             .Produces<Ok<AnimalViewModel>>()
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status500InternalServerError);
-        
+
         animalApi.MapDelete("/{Id:guid}", DeleteAnimalAsync)
             .WithName("DeleteAnimal")
             .WithSummary("Deletes an animal.")
             .Produces<NoContent>(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status500InternalServerError);
-        
+
         return app;
     }
+
     private static async Task<Results<CreatedAtRoute<AnimalViewModel>, ProblemHttpResult>> CreateAnimalAsync(
         [FromForm] CreateAnimalRequest request,
         HttpContext context,
@@ -83,7 +84,7 @@ public static class AnimalApi
             OwnerId = ownerId ?? Guid.Empty,
             Requirements = request.Requirements
         };
-        
+
         var response = await handler.HandleAsync(createAnimalCommand, cancellationToken);
         return TypedResults.CreatedAtRoute(response, routeName: "GetAnimalById", routeValues: new { id = response.Id });
     }
@@ -94,10 +95,10 @@ public static class AnimalApi
         CancellationToken cancellationToken = default)
     {
         var result = await handler.HandleAsync(query, cancellationToken);
-        
-        if(!result.IsSuccessful(out var response))
+
+        if (!result.IsSuccessful(out var response))
             return TypedResults.NotFound(result.Message);
-        
+
         return TypedResults.Ok(response);
     }
 
@@ -110,7 +111,7 @@ public static class AnimalApi
 
         if (!result.IsSuccessful(out var response))
             return TypedResults.NoContent();
-        
+
         return TypedResults.Ok(response);
     }
 
@@ -130,7 +131,7 @@ public static class AnimalApi
             request.PrincipalImage,
             request.AdditionalImages
         );
-        
+
         var response = await handler.HandleAsync(command, ct);
         return TypedResults.Ok(response);
     }
@@ -140,10 +141,10 @@ public static class AnimalApi
         CancellationToken ct = default)
     {
         var command = new DeleteAnimalCommand(request.Id);
-        
+
         await handler.HandleAsync(command, ct);
         return TypedResults.NoContent();
     }
 
 }
- 
+

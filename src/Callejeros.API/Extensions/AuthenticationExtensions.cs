@@ -27,12 +27,12 @@ public static class AuthenticationExtensions
         })
         .AddJwtBearer(options =>
         {
-            options.Authority = jwtOptions.GetValue<string>("Url");
+            options.Authority = jwtOptions.GetValue<string>("Issuer");
             options.Audience = jwtOptions.GetValue<string>("Audience");
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
-                ValidIssuer = jwtOptions.GetValue<string>("Url"),
+                ValidIssuer = jwtOptions.GetValue<string>("Issuer"),
                 ValidateAudience = true,
                 ValidAudience = jwtOptions.GetValue<string>("Audience"),
                 ValidateLifetime = true,

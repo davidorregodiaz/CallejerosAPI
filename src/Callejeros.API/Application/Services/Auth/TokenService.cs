@@ -1,4 +1,4 @@
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
@@ -54,7 +54,7 @@ public class TokenService
         }
 
         var token = new JwtSecurityToken(
-            issuer: _options.Value.Url,
+            issuer: _options.Value.Issuer,
             audience: _options.Value.Audience, 
             claims: claims,
             expires: DateTime.Now.AddMinutes(

@@ -1,4 +1,4 @@
-
+﻿
 using Adoption.API.Abstractions;
 using Adoption.API.Application.Commands.Users;
 using Adoption.API.Application.Models;
@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Adoption.API.Endpoints;
 
-public static class UserEndpoints
+public static class UserApi
 {
     public static IEndpointRouteBuilder MapUserEndpoints(this IEndpointRouteBuilder app)
     {
